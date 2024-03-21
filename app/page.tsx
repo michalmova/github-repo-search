@@ -30,7 +30,14 @@ export default function Home() {
     */
     const searchUrl = `https://api.github.com/search/repositories?q=${searchText}&sort=stars&order=desc&per_page=100`
 
-    // Caching in local storage // TODO: localStorage is limited so better option will be to use browser cache storage
+    // Caching in local storage 
+    /* 
+     TODO: localStorage is limited so better option will be to use browser cache storage
+     TODO: regarding "Updating the current URL on query change or table sort, so we get the same results when the page gets refreshed." -
+     we can make it in a different way (depends on demands) - store all the search params data e.g. in the local storage 
+     and during the first render we could take it and applied to the app
+     OR we can try to use 'useRouter' hook from Next js with a method 'push' to change the current url without reloading
+     */
     const cachedReposRaw = localStorage.getItem('cachedRepos')
     const cachedRepos = cachedReposRaw && JSON.parse(cachedReposRaw)
 
@@ -65,7 +72,6 @@ export default function Home() {
     clearTimeout(timeoutId.current)
     timeoutId.current = setTimeout(fn, delay)
   }
-
 
   // Sorting locally 
   /* 
@@ -116,6 +122,7 @@ export default function Home() {
       <button
         className="border border-black rounded-md p-2 w-[200px]"
         onClick={fetchData}
+        disabled
       >
         {isLoading ? 'Loading...' : 'Search'}
       </button>

@@ -1,3 +1,4 @@
+// TODO: applied detailed ts types in the whole app
 interface Props {
   repos: any,
 }
