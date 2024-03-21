@@ -1,13 +1,18 @@
 'use client'
 
 import TableResults from "@/components/TableResults"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+
+const DEBOUNCE_DELAY = 2000
 
 export default function Home() {
   const [repos, setRepos] = useState([])
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [searchText, setSearchText] = useState('')
+
+  let timeoutId = useRef<any>(null)
+
 
   const fetchData = async () => {
     const searchUrl = `https://api.github.com/search/repositories?q=${searchText}&sort=stars&order=desc`
@@ -32,6 +37,16 @@ export default function Home() {
       setIsLoading(false)
     }
   }
+
+  // TODO: make it as a reusable hook
+  const debounce = (fn: () => void, delay: number = 2000) => {
+    clearTimeout(timeoutId.current)
+    timeoutId.current = setTimeout(fn, delay)
+  }
+
+  useEffect(() => {
+    debounce(fetchData, DEBOUNCE_DELAY)
+  }, [searchText])
 
   const handleSearchChange = (e: any) => {
     setSearchText(e.target.value)
