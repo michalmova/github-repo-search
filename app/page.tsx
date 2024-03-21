@@ -15,7 +15,17 @@ export default function Home() {
 
 
   const fetchData = async () => {
+    if (!searchText) return
+
     const searchUrl = `https://api.github.com/search/repositories?q=${searchText}&sort=stars&order=desc`
+
+    // Caching in local storage // TODO: localStorage is limited so better option will be to use browser cache storage
+    const cachedReposRaw = localStorage.getItem('cachedRepos')
+    const cachedRepos = cachedReposRaw && JSON.parse(cachedReposRaw)
+
+    if (cachedRepos && cachedRepos[searchUrl]) {
+      return setRepos(cachedRepos[searchUrl].items)
+    }
 
     try {
       setError(null)
@@ -26,6 +36,7 @@ export default function Home() {
 
       if (fetchedRepos.items) {
         setRepos(fetchedRepos.items)
+        localStorage.setItem('cachedRepos', JSON.stringify({ ...cachedRepos, [searchUrl]: fetchedRepos }))
       } else {
         setError(fetchedRepos.message)
       }
@@ -38,7 +49,7 @@ export default function Home() {
     }
   }
 
-  // TODO: make it as a reusable hook
+  // Debouncer // TODO: make it as a reusable hook
   const debounce = (fn: () => void, delay: number = 2000) => {
     clearTimeout(timeoutId.current)
     timeoutId.current = setTimeout(fn, delay)
