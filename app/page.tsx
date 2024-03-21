@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 const DEBOUNCE_DELAY = 2000
 type PerPageType = 5 | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 100
+type SortType = 'name' | 'owner' | 'stars' | 'created_at'
 
 export default function Home() {
   const [repos, setRepos] = useState([])
@@ -12,6 +13,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [perPage, setPerPage] = useState<PerPageType>(30);
+  const [sort, setSort] = useState<SortType>('stars')
 
   let timeoutId = useRef<any>(null)
 
@@ -64,10 +66,26 @@ export default function Home() {
     timeoutId.current = setTimeout(fn, delay)
   }
 
+
+  // Sorting locally 
+  /* 
+    TODO: make it more flexible - add sorting options by clicking a column name - make it asc/desc interchangeably;
+    separate this function to some Utils folder
+  */
+  const sortReposBy: any = (repositories: any, sort: SortType) => {
+    const sortedRepos = repositories.sort((a: any, b: any) => {
+      if (sort === 'name') { return a.name.toString().localeCompare(b.name.toString()) }
+      if (sort === 'owner') { return a.owner.login.toString().localeCompare(b.owner.login.toString()) }
+      if (sort === 'stars') { return b.stargazers_count - a.stargazers_count }
+      if (sort === 'created_at') { return b.created_at.toString().localeCompare(a.created_at.toString()) }
+    })
+    return sortedRepos
+  }
+
   const displayedRepos: any = useMemo(() => {
-    return repos.slice(0, perPage)
+    return sortReposBy(repos.slice(0, perPage), sort)
   },
-    [repos, perPage]
+    [repos, perPage, sort]
   )
 
   useEffect(() => {
@@ -80,6 +98,10 @@ export default function Home() {
 
   const handlePerPageChange = (e: any) => {
     setPerPage(e.target.value)
+  }
+
+  const handleSortByChange = (e: any) => {
+    setSort(e.target.value)
   }
 
   return (
@@ -99,7 +121,7 @@ export default function Home() {
       </button>
 
       {/* Rows per page selector 
-      // TODO: make it as a separate reusable component
+       TODO: make it as a separate reusable component
       */}
       <span>
         <label className="mr-2">Displayed rows:</label>
@@ -115,6 +137,19 @@ export default function Home() {
           <option value={80}>80</option>
           <option value={90}>90</option>
           <option value={100}>100</option>
+        </select>
+      </span>
+
+      {/* Sort by selector
+        TODO: make it as a separate reusable component
+      */}
+      <span>
+        <label className="mr-2">Sort by:</label>
+        <select value={sort} onChange={handleSortByChange}>
+          <option value='name'>name</option>
+          <option value='owner'>owner</option>
+          <option value='stars'>stars</option>
+          <option value='created_at'>created_at</option>
         </select>
       </span>
 
