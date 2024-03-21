@@ -7,6 +7,8 @@ const DEBOUNCE_DELAY = 2000
 type PerPageType = 5 | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 100
 type SortType = 'name' | 'owner' | 'stars' | 'created_at'
 
+//TODO: write some test using e.g. Jest
+
 export default function Home() {
   const [repos, setRepos] = useState([])
   const [error, setError] = useState(null)
