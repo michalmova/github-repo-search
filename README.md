@@ -1,3 +1,8 @@
+## ACTION TO DO NEXT
+Directly in the code there are many 'TODO' comments which can help to improve the whole application ==> Look into the code
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
